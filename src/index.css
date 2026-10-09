@@ -1,2 +1,25 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
+
+/* KaTeX Global Mathematical Styling & High Contrast Rules */
+.katex {
+  color: inherit !important;
+  font-size: 1.12em;
+  text-rendering: geometricPrecision;
+}
+
+.katex-display {
+  color: inherit !important;
+  margin: 0.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+}
+
+.katex-html {
+  color: inherit !important;
+}
+
+.katex .base {
+  color: inherit !important;
+}

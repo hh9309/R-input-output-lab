@@ -30,6 +30,8 @@ export const Module1PathAlgebra: React.FC = () => {
 
   // Math formula tab selection in 1.1
   const [activeFormulaTab, setActiveFormulaTab] = useState<'mapping' | 'path_resolve' | 'lexer_types' | 'mmap_zerocopy'>('mapping');
+  // Visual theme toggle for formula display: 'light' (default, crystal clear academic) vs 'dark' (high contrast)
+  const [formulaTheme, setFormulaTheme] = useState<'light' | 'dark'>('light');
 
   // Memory & Chunking Algebra State
   const [datasetMb, setDatasetMb] = useState<number>(1200); // 1.2 GB
@@ -61,17 +63,17 @@ export const Module1PathAlgebra: React.FC = () => {
             </h2>
             <p className="text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
               形式化解析 R 语言环境下的工作目录定位机理 <code className="text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded font-mono text-xs">setwd()</code> 与 <code className="text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded font-mono text-xs">here::here()</code>，
-              建立数据读写映射 <span className="font-serif italic font-semibold text-slate-800">
-                <KatexMath math="f: \text{Path} \times \mathcal{S}_{\text{ByteStream}} \longrightarrow \mathcal{R}_{\text{HeapObject}}" />
+              建立数据读写映射 <span className="font-serif italic font-bold text-indigo-900 inline-block px-1">
+                <KatexMath math="f: \text{Path} \times \mathcal{S}_{\text{ByteStream}} \longrightarrow \mathcal{R}_{\text{HeapObject}}" className="text-indigo-950 font-bold" />
               </span>，并从底层推导内存映射 (mmap) 与分块迭代加载的代数开销。
             </p>
           </div>
-          <div className="flex items-center gap-2 self-start md:self-auto bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
-            <span className="font-mono text-indigo-700 font-bold">
-              <KatexMath math="f(\text{Path}, \mathcal{S})" />
+          <div className="flex items-center gap-2 self-start md:self-auto bg-indigo-50/80 p-2.5 rounded-xl border border-indigo-200 shadow-2xs text-xs">
+            <span className="font-mono text-indigo-900 font-bold">
+              <KatexMath math="f(\text{Path}, \mathcal{S})" className="text-indigo-950 font-bold" />
             </span>
-            <span className="text-slate-400">→</span>
-            <span className="text-slate-700 font-medium">Data Frame / Tibble</span>
+            <span className="text-indigo-400 font-bold">→</span>
+            <span className="text-indigo-950 font-bold">Data Frame / Tibble</span>
           </div>
         </div>
       </div>
@@ -79,16 +81,44 @@ export const Module1PathAlgebra: React.FC = () => {
       {/* 切片 1: 形式化代数模型与内存拓扑图 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
               <Sigma className="w-4 h-4 text-indigo-600" />
               <h3 className="text-sm font-bold text-slate-900">
                 1.1 数据流读写映射代数方程 (Formal Algebraic Mapping · KaTeX)
               </h3>
             </div>
-            <span className="text-[11px] font-mono px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-semibold">
-              KaTeX 形式化渲染
-            </span>
+            
+            {/* Visual contrast theme switcher */}
+            <div className="flex items-center gap-1.5 self-start sm:self-auto">
+              <span className="text-[11px] text-slate-400 hidden sm:inline">公式配色：</span>
+              <div className="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-sans">
+                <button
+                  type="button"
+                  onClick={() => setFormulaTheme('light')}
+                  className={`px-2.5 py-0.5 rounded cursor-pointer transition-colors ${
+                    formulaTheme === 'light'
+                      ? 'bg-white font-bold text-indigo-700 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="学术明亮高对比模式"
+                >
+                  明亮学术
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormulaTheme('dark')}
+                  className={`px-2.5 py-0.5 rounded cursor-pointer transition-colors ${
+                    formulaTheme === 'dark'
+                      ? 'bg-slate-800 font-bold text-emerald-400 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="深空极光高对比模式"
+                >
+                  深空极光
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Formula Sub-tabs */}
@@ -135,87 +165,214 @@ export const Module1PathAlgebra: React.FC = () => {
             </button>
           </div>
 
-          {/* KaTeX Formula Display Card */}
-          <div className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs leading-relaxed space-y-3 shadow-inner">
+          {/* KaTeX Formula Display Card - High Contrast Adaptive Theme */}
+          <div
+            className={`p-4.5 rounded-2xl border transition-all duration-200 leading-relaxed space-y-3.5 ${
+              formulaTheme === 'light'
+                ? 'bg-gradient-to-br from-indigo-50/70 via-slate-50 to-white border-indigo-200/90 shadow-xs text-slate-800'
+                : 'bg-slate-900 border-slate-700 shadow-md text-slate-100'
+            }`}
+          >
             {activeFormulaTab === 'mapping' && (
               <>
-                <div className="flex justify-between items-center text-amber-300 font-bold text-[11px]">
-                  <span>// 定理 1.1: 数据文件读入的抽象复合函数映射管线</span>
-                  <span className="text-slate-400 font-normal">f = Parse ∘ Lex ∘ Stream</span>
+                <div className="flex justify-between items-center text-[11px] font-bold">
+                  <span className={formulaTheme === 'light' ? 'text-indigo-900 font-bold' : 'text-amber-300 font-bold'}>
+                    // 定理 1.1: 数据文件读入的抽象复合函数映射管线
+                  </span>
+                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${
+                    formulaTheme === 'light' ? 'bg-indigo-100 text-indigo-800 font-bold' : 'bg-slate-800 text-slate-300'
+                  }`}>
+                    f = Parse ∘ Lex ∘ Stream
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-white">
+                
+                {/* Mathematical Formula Box */}
+                <div
+                  className={`p-4 rounded-xl border shadow-xs overflow-x-auto ${
+                    formulaTheme === 'light'
+                      ? 'bg-white border-indigo-200 text-indigo-950 ring-1 ring-indigo-500/10'
+                      : 'bg-slate-950 border-indigo-500/50 text-emerald-300'
+                  }`}
+                >
                   <KatexMath
                     block
                     math="f: \text{Path}_{\text{abs}} \times \mathcal{S}_{\text{ByteStream}} \xrightarrow{\quad\mathcal{P} \circ \mathcal{L}\quad} \mathcal{R}_{\text{HeapObject}}"
+                    className={formulaTheme === 'light' ? 'text-indigo-950 font-bold text-base' : 'text-emerald-300 font-bold text-base'}
                   />
                 </div>
-                <p className="text-slate-300 text-[11px] leading-normal font-sans">
-                  输入空间由规范化绝对文件路径 <KatexMath math="\text{Path}_{\text{abs}}" className="text-amber-300" /> 与底层离散磁盘字节序列 <KatexMath math="\mathcal{S} = [b_0, b_1, \dots, b_{N-1}]" className="text-emerald-300" /> 张成，输出为 R 运行期堆内存中的 S3/S4 向量对象 <KatexMath math="\mathcal{R} \in \mathbf{DF}(M \times K)" className="text-indigo-300" />。
+
+                <p className={`text-[12px] leading-relaxed font-sans ${formulaTheme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  输入空间由规范化绝对文件路径{' '}
+                  <KatexMath
+                    math="\text{Path}_{\text{abs}}"
+                    className={formulaTheme === 'light' ? 'text-indigo-700 font-bold px-1' : 'text-amber-300 font-bold px-1'}
+                  />{' '}
+                  与底层离散磁盘字节序列{' '}
+                  <KatexMath
+                    math="\mathcal{S} = [b_0, b_1, \dots, b_{N-1}]"
+                    className={formulaTheme === 'light' ? 'text-emerald-700 font-bold px-1' : 'text-emerald-300 font-bold px-1'}
+                  />{' '}
+                  张成，输出为 R 运行期堆内存中的 S3/S4 向量对象{' '}
+                  <KatexMath
+                    math="\mathcal{R} \in \mathbf{DF}(M \times K)"
+                    className={formulaTheme === 'light' ? 'text-indigo-800 font-bold px-1' : 'text-cyan-300 font-bold px-1'}
+                  />。
                 </p>
               </>
             )}
 
             {activeFormulaTab === 'path_resolve' && (
               <>
-                <div className="flex justify-between items-center text-amber-300 font-bold text-[11px]">
-                  <span>// 定理 1.2: 工作路径 (CWD) 与相对/绝对路径解析方程</span>
-                  <span className="text-slate-400 font-normal">Resolve(CWD, Rel)</span>
+                <div className="flex justify-between items-center text-[11px] font-bold">
+                  <span className={formulaTheme === 'light' ? 'text-indigo-900 font-bold' : 'text-amber-300 font-bold'}>
+                    // 定理 1.2: 工作路径 (CWD) 与相对/绝对路径解析方程
+                  </span>
+                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${
+                    formulaTheme === 'light' ? 'bg-indigo-100 text-indigo-800 font-bold' : 'bg-slate-800 text-slate-300'
+                  }`}>
+                    Resolve(CWD, Rel)
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-white">
+
+                <div
+                  className={`p-4 rounded-xl border shadow-xs overflow-x-auto ${
+                    formulaTheme === 'light'
+                      ? 'bg-white border-indigo-200 text-indigo-950 ring-1 ring-indigo-500/10'
+                      : 'bg-slate-950 border-indigo-500/50 text-emerald-300'
+                  }`}
+                >
                   <KatexMath
                     block
                     math="\text{Path}_{\text{abs}} = \mathcal{R}_{\text{cwd}}(\text{Path}_{\text{input}}) = \begin{cases} \text{Path}_{\text{input}}, & \text{if } \text{Path}_{\text{input}} \in \mathbb{P}_{\text{absolute}} \\ \text{CWD} \mathbin{\scalebox{0.8}{\big/}} \text{Path}_{\text{input}}, & \text{if } \text{Path}_{\text{input}} \in \mathbb{P}_{\text{relative}} \end{cases}"
+                    className={formulaTheme === 'light' ? 'text-indigo-950 font-bold text-base' : 'text-emerald-300 font-bold text-base'}
                   />
                 </div>
-                <p className="text-slate-300 text-[11px] leading-normal font-sans">
-                  其中当前工作目录 <KatexMath math="\text{CWD} = \text{getwd()}" className="text-amber-300" />。若路径硬编码，跨宿主机移植时 <KatexMath math="\text{CWD} \cap \text{Target} = \emptyset" className="text-red-400" /> 必触发 <span className="font-mono text-red-300">No such file</span> 故障；使用 <KatexMath math="\text{here::here()}" className="text-emerald-300" /> 能够锚定项目根节点。
+
+                <p className={`text-[12px] leading-relaxed font-sans ${formulaTheme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  其中当前工作目录{' '}
+                  <KatexMath
+                    math="\text{CWD} = \text{getwd()}"
+                    className={formulaTheme === 'light' ? 'text-indigo-700 font-bold px-1' : 'text-amber-300 font-bold px-1'}
+                  />。若路径硬编码，跨宿主机移植时{' '}
+                  <KatexMath
+                    math="\text{CWD} \cap \text{Target} = \emptyset"
+                    className="text-red-600 font-bold px-1"
+                  />{' '}
+                  必触发 <span className="font-mono text-red-600 font-bold">No such file</span> 故障；使用{' '}
+                  <KatexMath
+                    math="\text{here::here()}"
+                    className={formulaTheme === 'light' ? 'text-emerald-700 font-bold px-1' : 'text-emerald-300 font-bold px-1'}
+                  /> 能够锚定项目根节点。
                 </p>
               </>
             )}
 
             {activeFormulaTab === 'lexer_types' && (
               <>
-                <div className="flex justify-between items-center text-amber-300 font-bold text-[11px]">
-                  <span>// 定理 1.3: 分词矩阵投影与向量内存分配算子</span>
-                  <KatexMath math="\mathcal{L}_{\text{sep}} \to \mathbf{T}_{M \times K}" className="text-slate-400 font-normal" />
+                <div className="flex justify-between items-center text-[11px] font-bold">
+                  <span className={formulaTheme === 'light' ? 'text-indigo-900 font-bold' : 'text-amber-300 font-bold'}>
+                    // 定理 1.3: 分词矩阵投影与向量内存分配算子
+                  </span>
+                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${
+                    formulaTheme === 'light' ? 'bg-indigo-100 text-indigo-800 font-bold' : 'bg-slate-800 text-slate-300'
+                  }`}>
+                    Lexer ∘ Allocation
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-white">
+
+                <div
+                  className={`p-4 rounded-xl border shadow-xs overflow-x-auto ${
+                    formulaTheme === 'light'
+                      ? 'bg-white border-indigo-200 text-indigo-950 ring-1 ring-indigo-500/10'
+                      : 'bg-slate-950 border-indigo-500/50 text-emerald-300'
+                  }`}
+                >
                   <KatexMath
                     block
                     math="\mathcal{L}_{(\text{sep}, \text{quote})}: \mathcal{S} \longrightarrow \mathbf{T}_{M \times K} = \begin{bmatrix} \tau_{1,1} & \cdots & \tau_{1,K} \\ \vdots & \ddots & \vdots \\ \tau_{M,1} & \cdots & \tau_{M,K} \end{bmatrix} \xrightarrow{\mathcal{P}_{\text{type}}} \begin{bmatrix} \mathbf{v}_1 & \cdots & \mathbf{v}_K \end{bmatrix}"
+                    className={formulaTheme === 'light' ? 'text-indigo-950 font-bold text-base' : 'text-emerald-300 font-bold text-base'}
                   />
                 </div>
-                <p className="text-slate-300 text-[11px] leading-normal font-sans">
-                  总堆内存消耗公式：
+
+                <div className={`p-3 rounded-lg border ${
+                  formulaTheme === 'light' ? 'bg-indigo-50/50 border-indigo-200/80' : 'bg-slate-950/70 border-slate-800'
+                }`}>
+                  <span className={`text-[11px] font-bold block mb-1 ${formulaTheme === 'light' ? 'text-indigo-900' : 'text-slate-300'}`}>
+                    总堆内存消耗推导方程 (Heap Footprint)：
+                  </span>
                   <KatexMath
                     block
                     math="\text{Heap}_{\text{Total}} = \sum_{j=1}^{K} \left( M \cdot \text{sizeof}(\text{type}_j) \right) + K \cdot \Omega_{\text{SEXP}} + \text{Vcells} \cdot 8\text{B} + \text{Ncells} \cdot 56\text{B}"
+                    className={formulaTheme === 'light' ? 'text-indigo-900 font-bold text-[13.5px]' : 'text-cyan-300 font-bold text-[13.5px]'}
                   />
-                </p>
+                </div>
               </>
             )}
 
             {activeFormulaTab === 'mmap_zerocopy' && (
               <>
-                <div className="flex justify-between items-center text-amber-300 font-bold text-[11px]">
-                  <span>// 定理 1.4: Apache Arrow 零拷贝 (Zero-Copy) 系统调用映射</span>
-                  <KatexMath math="\Phi_{\text{mmap}}" className="text-slate-400 font-normal" />
+                <div className="flex justify-between items-center text-[11px] font-bold">
+                  <span className={formulaTheme === 'light' ? 'text-indigo-900 font-bold' : 'text-amber-300 font-bold'}>
+                    // 定理 1.4: Apache Arrow 零拷贝 (Zero-Copy) 系统调用映射
+                  </span>
+                  <span className={`px-2 py-0.5 rounded font-mono text-[10px] ${
+                    formulaTheme === 'light' ? 'bg-indigo-100 text-indigo-800 font-bold' : 'bg-slate-800 text-slate-300'
+                  }`}>
+                    ALTREP Zero-Copy
+                  </span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-white">
+
+                <div
+                  className={`p-4 rounded-xl border shadow-xs overflow-x-auto ${
+                    formulaTheme === 'light'
+                      ? 'bg-white border-indigo-200 text-indigo-950 ring-1 ring-indigo-500/10'
+                      : 'bg-slate-950 border-indigo-500/50 text-emerald-300'
+                  }`}
+                >
                   <KatexMath
                     block
                     math="\Phi_{\text{mmap}}: \text{FD} \times \text{Offset} \longrightarrow \text{Addr}_{\text{VirtualMem}} \implies \Delta \text{CopyBytes} = 0"
+                    className={formulaTheme === 'light' ? 'text-indigo-950 font-bold text-base' : 'text-emerald-300 font-bold text-base'}
                   />
                 </div>
-                <p className="text-slate-300 text-[11px] leading-normal font-sans">
-                  通过 Linux/POSIX 内核虚拟内存映射与 R 语言的 ALTREP 指针挂载，绕过逐行分词与深度复制，将加载耗时从 <KatexMath math="\mathcal{O}(N)" className="text-amber-300" /> 直接降维至 <KatexMath math="\mathcal{O}(1)" className="text-emerald-300" />。
+
+                <p className={`text-[12px] leading-relaxed font-sans ${formulaTheme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                  通过 Linux/POSIX 内核虚拟内存映射与 R 语言的 ALTREP 指针挂载，绕过逐行分词与深度复制，将加载耗时从{' '}
+                  <KatexMath
+                    math="\mathcal{O}(N)"
+                    className={formulaTheme === 'light' ? 'text-amber-700 font-bold px-1' : 'text-amber-300 font-bold px-1'}
+                  />{' '}
+                  直接降维至{' '}
+                  <KatexMath
+                    math="\mathcal{O}(1)"
+                    className={formulaTheme === 'light' ? 'text-emerald-700 font-bold px-1' : 'text-emerald-300 font-bold px-1'}
+                  />。
                 </p>
               </>
             )}
 
-            <div className="text-slate-400 text-[11px] font-sans border-t border-slate-800 pt-2 grid grid-cols-2 gap-2">
-              <div>• 字节空间大小: <KatexMath math="N = |\mathcal{S}| \text{ Bytes}" className="text-slate-200" /></div>
-              <div>• 矩阵行列规格: <KatexMath math="M \text{ 观测 } \times K \text{ 属性}" className="text-slate-200" /></div>
+            {/* Spec footer */}
+            <div
+              className={`text-[11px] font-sans border-t pt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2 ${
+                formulaTheme === 'light'
+                  ? 'border-indigo-100 text-slate-600 bg-white/70 p-2.5 rounded-lg'
+                  : 'border-slate-800 text-slate-400 bg-slate-950/60 p-2.5 rounded-lg'
+              }`}
+            >
+              <div>
+                • 字节空间大小:{' '}
+                <KatexMath
+                  math="N = |\mathcal{S}| \text{ Bytes}"
+                  className={formulaTheme === 'light' ? 'text-indigo-900 font-bold px-1' : 'text-slate-200 font-bold px-1'}
+                />
+              </div>
+              <div>
+                • 矩阵行列规格:{' '}
+                <KatexMath
+                  math="M \text{ 观测 } \times K \text{ 属性}"
+                  className={formulaTheme === 'light' ? 'text-indigo-900 font-bold px-1' : 'text-slate-200 font-bold px-1'}
+                />
+              </div>
             </div>
           </div>
 
@@ -229,22 +386,22 @@ export const Module1PathAlgebra: React.FC = () => {
               <div className="p-3 rounded-lg bg-white border border-slate-200 shadow-2xs">
                 <div className="text-[10px] text-slate-400 uppercase font-mono">第 1 阶：磁盘扇区</div>
                 <div className="font-bold text-slate-800 text-xs mt-1">Sectors / SSD Blocks</div>
-                <div className="text-[11px] text-slate-500 mt-1">
-                  <KatexMath math="\mathcal{S} = [b_0, \dots, b_N]" /> 原始二进制流
+                <div className="text-[11px] text-slate-600 mt-1">
+                  <KatexMath math="\mathcal{S} = [b_0, \dots, b_N]" className="text-slate-800 font-bold" /> 原始二进制流
                 </div>
               </div>
               <div className="p-3 rounded-lg bg-white border border-indigo-200 shadow-2xs">
                 <div className="text-[10px] text-indigo-600 uppercase font-mono">第 2 阶：操作系统层</div>
                 <div className="font-bold text-indigo-900 text-xs mt-1">OS Page Cache / mmap</div>
-                <div className="text-[11px] text-slate-500 mt-1">
-                  <KatexMath math="\Phi_{\text{mmap}}" /> 零拷贝直接挂载
+                <div className="text-[11px] text-indigo-700 mt-1">
+                  <KatexMath math="\Phi_{\text{mmap}} \implies 0\text{-Copy}" className="text-indigo-800 font-bold" /> 零拷贝直接挂载
                 </div>
               </div>
               <div className="p-3 rounded-lg bg-white border border-slate-200 shadow-2xs">
                 <div className="text-[10px] text-slate-400 uppercase font-mono">第 3 阶：R 运行时堆</div>
                 <div className="font-bold text-slate-800 text-xs mt-1">R Heap (Vcells / Ncells)</div>
-                <div className="text-[11px] text-slate-500 mt-1">
-                  分配原子向量并触发 GC 回收
+                <div className="text-[11px] text-slate-600 mt-1">
+                  <KatexMath math="\text{Vector}_{\text{SEXP}} \in \text{Heap}" className="text-slate-800 font-bold" /> 触发 GC 回收
                 </div>
               </div>
             </div>

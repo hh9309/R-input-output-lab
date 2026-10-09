@@ -28,7 +28,7 @@ export const KatexMath: React.FC<KatexMathProps> = ({
   if (block) {
     return (
       <div
-        className={`overflow-x-auto py-2.5 px-3 rounded-lg text-slate-800 text-center font-serif leading-relaxed ${className}`}
+        className={`overflow-x-auto py-2.5 px-3 rounded-lg text-center font-serif leading-relaxed text-inherit ${className}`}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     );
@@ -36,7 +36,7 @@ export const KatexMath: React.FC<KatexMathProps> = ({
 
   return (
     <span
-      className={`inline-block align-middle font-serif text-slate-800 ${className}`}
+      className={`inline-block align-middle font-serif text-inherit ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
