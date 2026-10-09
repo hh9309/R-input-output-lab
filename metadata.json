@@ -1,0 +1,6 @@
+{
+  "name": "R语言数据文件读写实验室",
+  "description": "R Data File I/O Lab - 涵盖工作路径代数建模、文本与电子表格读写、高性能二进制与数据库、四大实战案例、代码引擎与AI随诊的交互式实验室",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
